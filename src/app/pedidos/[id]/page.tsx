@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/Button';
 
@@ -45,7 +46,7 @@ interface Pedido {
   total: number;
 }
 
-export default function DetallePedidoPage({ params }: { params: { id: string } }) {
+export default function PedidoDetallePage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [pedido, setPedido] = useState<Pedido | null>(null);
@@ -395,7 +396,7 @@ export default function DetallePedidoPage({ params }: { params: { id: string } }
             <Button
               variant="primary"
               onClick={handleGuardarCambios}
-              loading={loadingAction}
+              isLoading={loadingAction}
             >
               Guardar Cambios
             </Button>
@@ -406,7 +407,7 @@ export default function DetallePedidoPage({ params }: { params: { id: string } }
               <Button
                 variant="danger"
                 onClick={handleCancelar}
-                loading={loadingAction}
+                isLoading={loadingAction}
                 disabled={pedido.estado === 'ENTREGADO'}
               >
                 Cancelar Pedido
@@ -416,7 +417,7 @@ export default function DetallePedidoPage({ params }: { params: { id: string } }
               <Button
                 variant={pedido.pagado ? 'warning' : 'success'}
                 onClick={handleMarcarPagado}
-                loading={loadingAction}
+                isLoading={loadingAction}
               >
                 {pedido.pagado ? 'Marcar No Pagado' : 'Marcar Pagado'}
               </Button>
@@ -425,7 +426,7 @@ export default function DetallePedidoPage({ params }: { params: { id: string } }
               <Button
                 variant="success"
                 onClick={handleMarcarEntregado}
-                loading={loadingAction}
+                isLoading={loadingAction}
               >
                 Marcar Entregado
               </Button>

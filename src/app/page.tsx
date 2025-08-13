@@ -105,7 +105,7 @@ export default async function Home() {
                   </Button>
                 </Link>
                 
-                {session.user.role === 'ADMIN' && (
+                {session?.user?.role === 'ADMIN' && (
                   <>
                     <Link href="/repartos/nuevo">
                       <Button variant="secondary" className="w-full justify-start">
@@ -131,12 +131,12 @@ export default async function Home() {
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-blue-600 mb-4">Información de Usuario</h2>
               <div className="space-y-2 mb-6">
-                <p><span className="font-semibold">Nombre:</span> {session.user.name}</p>
-                <p><span className="font-semibold">Email:</span> {session.user.email}</p>
-                <p><span className="font-semibold">Rol:</span> {session.user.role === 'ADMIN' ? 'Administrador' : 'Usuario'}</p>
+                <p><span className="font-semibold">Nombre:</span> {session?.user?.name}</p>
+                <p><span className="font-semibold">Email:</span> {session?.user?.email}</p>
+                <p><span className="font-semibold">Rol:</span> {session?.user?.role === 'ADMIN' ? 'Administrador' : 'Usuario'}</p>
               </div>
               
-              {session.user.role === 'ADMIN' && (
+              {session?.user?.role === 'ADMIN' && (
                 <div className="pt-4 border-t border-gray-200">
                   <h3 className="text-lg font-semibold mb-3">Administración</h3>
                   <div className="space-y-3">

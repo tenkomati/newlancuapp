@@ -22,7 +22,7 @@ const usuarioSchema = z.object({
   nombre: z.string().min(1, { message: 'El nombre es requerido' }),
   apellido: z.string().min(1, { message: 'El apellido es requerido' }),
   role: z.enum(['ADMIN', 'USER'], {
-    errorMap: () => ({ message: 'Seleccione un rol válido' }),
+    message: 'Seleccione un rol válido',
   }),
   clienteId: z.string().optional(),
 });
@@ -125,7 +125,7 @@ export default function NuevoUsuarioPage() {
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
         <div className="space-y-4">
           <FormField
             name="email"
@@ -196,7 +196,7 @@ export default function NuevoUsuarioPage() {
             >
               Cancelar
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" isLoading={loading}>
               Guardar
             </Button>
           </div>

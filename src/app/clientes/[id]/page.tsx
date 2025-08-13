@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
+import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,6 +24,7 @@ type ClienteFormValues = z.infer<typeof clienteSchema>;
 
 export default function EditarClientePage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +35,7 @@ export default function EditarClientePage({ params }: { params: { id: string } }
     formState: { errors },
     reset,
   } = useForm<ClienteFormValues>({
-    resolver: zodResolver(clienteSchema),
+    resolver: zodResolver(clienteSchema) as any,
     defaultValues: {
       nombre: '',
       direccion: '',
@@ -116,7 +119,10 @@ export default function EditarClientePage({ params }: { params: { id: string } }
       )}
 
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <Form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(onSubmit)(e);
+        }}>
           <FormField
             label="Nombre"
             htmlFor="nombre"

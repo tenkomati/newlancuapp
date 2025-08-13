@@ -7,12 +7,11 @@ import bcrypt from 'bcrypt';
 
 // Schema para validación de usuario
 const usuarioSchema = z.object({
-  nombre: z.string().min(1, 'El nombre es requerido'),
+  name: z.string().min(1, 'El nombre es requerido'),
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
-  role: z.enum(['ADMIN', 'USER']).default('USER'),
+  role: z.enum(['ADMIN', 'USUARIO']).default('USUARIO'),
   clienteId: z.string().optional().nullable(),
-  activo: z.boolean().default(true),
 });
 
 // GET - Obtener todos los usuarios
@@ -30,15 +29,14 @@ export async function GET() {
     const usuarios = await db.user.findMany({
       select: {
         id: true,
-        nombre: true,
+        name: true,
         email: true,
         role: true,
         clienteId: true,
-        activo: true,
         cliente: true,
       },
       orderBy: {
-        nombre: 'asc',
+        name: 'asc',
       },
     });
 
@@ -103,20 +101,18 @@ export async function POST(req: NextRequest) {
     // Crear el usuario
     const usuario = await db.user.create({
       data: {
-        nombre: validatedData.nombre,
+        name: validatedData.name,
         email: validatedData.email,
         password: hashedPassword,
         role: validatedData.role,
         clienteId: validatedData.clienteId,
-        activo: validatedData.activo,
       },
       select: {
         id: true,
-        nombre: true,
+        name: true,
         email: true,
         role: true,
         clienteId: true,
-        activo: true,
         cliente: true,
       },
     });
@@ -125,7 +121,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors },
+        { error: error.issues },
         { status: 400 }
       );
     }

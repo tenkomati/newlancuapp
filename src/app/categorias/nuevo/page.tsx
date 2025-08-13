@@ -85,7 +85,7 @@ export default function NuevaCategoriaPage() {
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
         <div className="space-y-4">
           <FormField
             name="nombre"
@@ -110,7 +110,7 @@ export default function NuevaCategoriaPage() {
             >
               Cancelar
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" isLoading={loading}>
               Guardar
             </Button>
           </div>

@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     const clienteId = searchParams.get('clienteId');
 
     // Filtrar por cliente si el usuario no es admin
-    const where = {};
+    const where: any = {};
     if (session.user.role !== 'ADMIN') {
       if (!session.user.clienteId) {
         return NextResponse.json(
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors },
+        { error: error.issues },
         { status: 400 }
       );
     }

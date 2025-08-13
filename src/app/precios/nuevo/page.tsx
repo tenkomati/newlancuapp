@@ -17,11 +17,11 @@ interface Categoria {
 // Schema para validación de precio
 const precioSchema = z.object({
   tipo: z.enum(['FABRICA', 'MAYORISTA', 'MINORISTA'], {
-    errorMap: () => ({ message: 'Seleccione un tipo de precio válido' }),
+    message: 'Seleccione un tipo de precio válido',
   }),
   valor: z.preprocess(
     (val) => (val === '' ? undefined : Number(val)),
-    z.number({ invalid_type_error: 'El valor debe ser un número' }).positive({ message: 'El precio debe ser mayor a 0' })
+    z.coerce.number({ message: 'El valor debe ser un número' }).positive({ message: 'El precio debe ser mayor a 0' })
   ),
   fechaInicio: z.string().min(1, { message: 'La fecha de inicio es requerida' }),
   fechaFin: z.string().optional().nullable(),
@@ -39,7 +39,7 @@ export default function NuevoPrecioPage() {
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<PrecioFormValues>({
-    resolver: zodResolver(precioSchema),
+    resolver: zodResolver(precioSchema) as any,
     defaultValues: {
       tipo: undefined,
       valor: undefined,
@@ -121,7 +121,7 @@ export default function NuevoPrecioPage() {
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
         <div className="space-y-4">
           <FormField
             name="categoriaId"
@@ -177,7 +177,6 @@ export default function NuevoPrecioPage() {
           <FormField
             name="activo"
             label="Estado"
-            type="checkbox"
           >
             <div className="flex items-center">
               <input
@@ -197,7 +196,7 @@ export default function NuevoPrecioPage() {
             >
               Cancelar
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" isLoading={loading}>
               Guardar
             </Button>
           </div>

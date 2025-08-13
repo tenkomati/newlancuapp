@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const incluirPasados = searchParams.get('incluirPasados') === 'true';
     const zona = searchParams.get('zona');
 
-    const where = {};
+    const where: any = {};
     
     // Filtrar por fecha si no se incluyen pasados
     if (!incluirPasados) {
@@ -168,7 +168,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors },
+        { error: error.issues },
         { status: 400 }
       );
     }

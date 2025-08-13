@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -250,7 +251,7 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
             <h2 className="text-lg font-semibold">Editar Reparto</h2>
           </div>
           <div className="p-4">
-            <Form form={form} onSubmit={onSubmit}>
+            <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
               <div className="space-y-4">
                 <FormField
                   name="fecha"
@@ -283,7 +284,7 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
                   >
                     Cancelar
                   </Button>
-                  <Button type="submit" loading={loadingAction}>
+                  <Button type="submit" isLoading={loadingAction}>
                     Guardar
                   </Button>
                 </div>
@@ -376,7 +377,7 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
                             variant="success"
                             size="sm"
                             onClick={() => handleMarcarEntregado(pedido.id)}
-                            loading={loadingAction}
+                            isLoading={loadingAction}
                           >
                             Entregar
                           </Button>
@@ -396,7 +397,7 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
           <Button
             variant="danger"
             onClick={handleEliminar}
-            loading={loadingAction}
+            isLoading={loadingAction}
             disabled={tieneEntregados}
             title={tieneEntregados ? 'No se puede eliminar un reparto con pedidos entregados' : ''}
           >

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -47,7 +48,7 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<ProductoFormValues>({
-    resolver: zodResolver(productoSchema),
+    resolver: zodResolver(productoSchema) as any,
     defaultValues: {
       nombre: '',
       descripcion: '',
@@ -153,7 +154,7 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
         <div className="space-y-4">
           <FormField
             name="nombre"
@@ -188,7 +189,6 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
           <FormField
             name="activo"
             label="Estado"
-            type="checkbox"
           >
             <div className="flex items-center">
               <input
@@ -208,7 +208,7 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
             >
               Cancelar
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" isLoading={loading}>
               Guardar
             </Button>
           </div>

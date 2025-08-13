@@ -1,12 +1,14 @@
 import { ReactNode } from 'react';
+import { UseFormReturn } from 'react-hook-form';
 
 interface FormProps {
-  onSubmit: (e: React.FormEvent) => void;
+  form?: UseFormReturn<any>;
+  onSubmit: (e: React.FormEvent) => void | Promise<void>;
   children: ReactNode;
   className?: string;
 }
 
-export function Form({ onSubmit, children, className = '' }: FormProps) {
+export function Form({ form, onSubmit, children, className = '' }: FormProps) {
   return (
     <form onSubmit={onSubmit} className={`space-y-6 ${className}`}>
       {children}
@@ -15,20 +17,25 @@ export function Form({ onSubmit, children, className = '' }: FormProps) {
 }
 
 interface FormFieldProps {
+  name?: string;
   label: string;
-  htmlFor: string;
+  htmlFor?: string;
   error?: string;
+  required?: boolean;
   children: ReactNode;
 }
 
-export function FormField({ label, htmlFor, error, children }: FormFieldProps) {
+export function FormField({ name, label, htmlFor, error, required, children }: FormFieldProps) {
+  const fieldId = htmlFor || name || '';
+  
   return (
     <div>
       <label
-        htmlFor={htmlFor}
+        htmlFor={fieldId}
         className="block text-sm font-medium text-gray-700 mb-1"
       >
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <div className="mt-1">{children}</div>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}

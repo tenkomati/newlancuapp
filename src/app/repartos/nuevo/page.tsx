@@ -85,7 +85,7 @@ export default function NuevoRepartoPage() {
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
         <div className="space-y-4">
           <FormField
             name="fecha"
@@ -118,7 +118,7 @@ export default function NuevoRepartoPage() {
             >
               Cancelar
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" isLoading={loading}>
               Guardar
             </Button>
           </div>

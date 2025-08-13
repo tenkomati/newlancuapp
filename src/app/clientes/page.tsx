@@ -26,7 +26,7 @@ export default function ClientesPage() {
 
   // Verificar si el usuario es admin
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+    if (status === 'authenticated' && session?.user && (session.user as any).role !== 'ADMIN') {
       router.push('/');
     }
   }, [session, status, router]);
@@ -49,7 +49,7 @@ export default function ClientesPage() {
       }
     };
 
-    if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
+    if (status === 'authenticated' && session?.user && (session.user as any).role === 'ADMIN') {
       fetchClientes();
     }
   }, [status, session]);
@@ -80,10 +80,10 @@ export default function ClientesPage() {
   };
 
   if (status === 'loading' || (status === 'authenticated' && isLoading)) {
-    return <div className="text-center py-10">Cargando...</div>;
+    return <div className="text-center py-10 bg-gray-50 rounded-md">Cargando...</div>;
   }
 
-  if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+  if (status === 'authenticated' && session?.user && (session.user as any).role !== 'ADMIN') {
     return null; // Redirigiendo...
   }
 
@@ -143,6 +143,7 @@ export default function ClientesPage() {
                     variant="danger"
                     size="sm"
                     onClick={() => handleDelete(cliente.id)}
+                    aria-label="Eliminar cliente"
                   >
                     Eliminar
                   </Button>

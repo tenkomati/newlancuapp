@@ -7,12 +7,11 @@ import bcrypt from 'bcrypt';
 
 // Schema para validación de usuario (actualización)
 const usuarioUpdateSchema = z.object({
-  nombre: z.string().min(1, 'El nombre es requerido'),
+  name: z.string().min(1, 'El nombre es requerido'),
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres').optional(),
-  role: z.enum(['ADMIN', 'USER']).default('USER'),
+  role: z.enum(['ADMIN', 'USUARIO']).default('USUARIO'),
   clienteId: z.string().optional().nullable(),
-  activo: z.boolean().default(true),
 });
 
 // GET - Obtener un usuario por ID
@@ -33,11 +32,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       },
       select: {
         id: true,
-        nombre: true,
+        name: true,
         email: true,
         role: true,
         clienteId: true,
-        activo: true,
         cliente: true,
       },
     });
@@ -121,12 +119,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     // Preparar datos para actualización
-    const updateData = {
-      nombre: validatedData.nombre,
+    const updateData: any = {
+      name: validatedData.name,
       email: validatedData.email,
       role: validatedData.role,
       clienteId: validatedData.clienteId,
-      activo: validatedData.activo,
     };
 
     // Actualizar contraseña si se proporciona
@@ -142,11 +139,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       data: updateData,
       select: {
         id: true,
-        nombre: true,
+        name: true,
         email: true,
         role: true,
         clienteId: true,
-        activo: true,
         cliente: true,
       },
     });
@@ -155,7 +151,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors },
+        { error: error.issues },
         { status: 400 }
       );
     }

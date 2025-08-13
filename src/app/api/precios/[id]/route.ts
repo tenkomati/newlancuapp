@@ -127,7 +127,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors },
+        { error: error.issues },
         { status: 400 }
       );
     }

@@ -35,11 +35,11 @@ const pedidoItemSchema = z.object({
   productoId: z.string().min(1, { message: 'El producto es requerido' }),
   cantidad: z.preprocess(
     (val) => (val === '' ? undefined : Number(val)),
-    z.number({ invalid_type_error: 'La cantidad debe ser un número' }).positive({ message: 'La cantidad debe ser mayor a 0' })
+    z.coerce.number({ message: 'La cantidad debe ser un número' }).positive({ message: 'La cantidad debe ser mayor a 0' })
   ),
   precioUnitario: z.preprocess(
     (val) => (val === '' ? undefined : Number(val)),
-    z.number({ invalid_type_error: 'El precio debe ser un número' }).nonnegative({ message: 'El precio no puede ser negativo' })
+    z.coerce.number({ message: 'El precio debe ser un número' }).nonnegative({ message: 'El precio no puede ser negativo' })
   ),
 });
 
@@ -61,7 +61,7 @@ export default function NuevoPedidoPage() {
   const [clienteTipo, setClienteTipo] = useState<'FABRICA' | 'MAYORISTA' | 'MINORISTA' | null>(null);
 
   const form = useForm<PedidoFormValues>({
-    resolver: zodResolver(pedidoSchema),
+    resolver: zodResolver(pedidoSchema) as any,
     defaultValues: {
       clienteId: '',
       observacion: '',
@@ -209,7 +209,7 @@ export default function NuevoPedidoPage() {
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
@@ -315,7 +315,7 @@ export default function NuevoPedidoPage() {
               >
                 Cancelar
               </Button>
-              <Button type="submit" loading={loading}>
+              <Button type="submit" isLoading={loading}>
                 Guardar
               </Button>
             </div>

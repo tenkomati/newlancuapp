@@ -40,4 +40,24 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# docker
+.dockerignore
+
+# logs
+logs
+*.log
+
+# database
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
 /src/generated/prisma
