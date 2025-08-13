@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuario para autenticación
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          Role      @default(USUARIO)
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  cliente       Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId     String?
+}
+
+// Roles de usuario
+enum Role {
+  ADMIN
+  USUARIO
+}
+
+// Modelo de Cliente
+model Cliente {
+  id        String    @id @default(cuid())
+  nombre    String
+  direccion String
+  telefono  String
+  email     String?
+  zona      String
+  activo    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  usuarios  User[]
+  pedidos   Pedido[]
+}
+
+// Modelo de Categoría de Productos
+model Categoria {
+  id        String     @id @default(cuid())
+  nombre    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  productos Producto[]
+  precios   Precio[]
+}
+
+// Modelo de Producto (Sabores)
+model Producto {
+  id          String       @id @default(cuid())
+  nombre      String
+  descripcion String?
+  imagen      String?
+  activo      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  categoria   Categoria    @relation(fields: [categoriaId], references: [id])
+  categoriaId String
+  pedidoItems PedidoItem[]
+}
+
+// Modelo de Precios por Categoría
+model Precio {
+  id          String      @id @default(cuid())
+  tipo        TipoPrecio
+  valor       Float
+  fechaInicio DateTime    @default(now())
+  fechaFin    DateTime?
+  activo      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  categoriaId String
+}
+
+// Tipos de Precio
+enum TipoPrecio {
+  FABRICA
+  MAYORISTA
+  MINORISTA
+}
+
+// Modelo de Pedido
+model Pedido {
+  id          String       @id @default(cuid())
+  fecha       DateTime     @default(now())
+  estado      EstadoPedido @default(PENDIENTE)
+  cobrado     Boolean      @default(false)
+  total       Float
+  observacion String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  cliente     Cliente      @relation(fields: [clienteId], references: [id])
+  clienteId   String
+  reparto     Reparto?     @relation(fields: [repartoId], references: [id])
+  repartoId   String?
+  items       PedidoItem[]
+}
+
+// Estados de Pedido
+enum EstadoPedido {
+  PENDIENTE
+  ENTREGADO
+  CANCELADO
+}
+
+// Modelo de Items de Pedido
+model PedidoItem {
+  id         String   @id @default(cuid())
+  cantidad   Int
+  precio     Float
+  subtotal   Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  pedido     Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  pedidoId   String
+  producto   Producto @relation(fields: [productoId], references: [id])
+  productoId String
+}
+
+// Modelo de Reparto
+model Reparto {
+  id        String    @id @default(cuid())
+  fecha     DateTime
+  zona      String?
+  estado    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  pedidos   Pedido[]
+}
