@@ -117,6 +117,7 @@ npx prisma studio
 
 ## 🚨 Importante
 
+- **Next.js 15**: ✅ La aplicación ha sido actualizada para ser compatible con Next.js 15
 - **Nunca** subas el archivo `.env` al repositorio
 - **Genera** una clave secreta fuerte para `NEXTAUTH_SECRET`
 - **Actualiza** `NEXTAUTH_URL` con tu dominio real

@@ -13,7 +13,7 @@ const repartoSchema = z.object({
 });
 
 // GET - Obtener un reparto por ID
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -24,9 +24,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     const reparto = await db.reparto.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         pedidos: {
@@ -60,7 +62,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // PUT - Actualizar un reparto por ID
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -71,10 +73,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el reparto existe
     const repartoExistente = await db.reparto.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -106,7 +110,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             lte: fechaFin,
           },
           id: {
-            not: params.id,
+            not: id,
           },
         },
       });
@@ -122,7 +126,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Actualizar el reparto
     const repartoActualizado = await db.reparto.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: validatedData,
     });
@@ -132,7 +136,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       // Desasignar pedidos que no corresponden a la nueva zona
       await db.pedido.updateMany({
         where: {
-          repartoId: params.id,
+          repartoId: id,
           cliente: {
             zona: {
               not: validatedData.zona,
@@ -166,7 +170,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             estado: 'PENDIENTE',
           },
           data: {
-            repartoId: params.id,
+            repartoId: id,
           },
         });
       }
@@ -175,7 +179,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Obtener el reparto actualizado con los pedidos
     const repartoConPedidos = await db.reparto.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         pedidos: {
@@ -209,7 +213,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - Eliminar un reparto por ID
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -220,10 +224,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el reparto existe
     const repartoExistente = await db.reparto.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         pedidos: true,
@@ -250,7 +256,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Desasignar los pedidos asociados a este reparto
     await db.pedido.updateMany({
       where: {
-        repartoId: params.id,
+        repartoId: id,
       },
       data: {
         repartoId: null,
@@ -260,7 +266,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Eliminar el reparto
     await db.reparto.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 

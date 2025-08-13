@@ -15,7 +15,7 @@ const precioSchema = z.object({
 });
 
 // GET - Obtener un precio por ID
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -26,9 +26,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     const precio = await db.precio.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         categoria: true,
@@ -53,7 +55,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // PUT - Actualizar un precio por ID
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -64,10 +66,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el precio existe
     const precioExistente = await db.precio.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -103,7 +107,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
           tipo: validatedData.tipo,
           activo: true,
           id: {
-            not: params.id,
+            not: id,
           },
         },
         data: {
@@ -115,7 +119,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     const precioActualizado = await db.precio.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: validatedData,
       include: {
@@ -141,7 +145,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - Eliminar un precio por ID
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -152,10 +156,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el precio existe
     const precioExistente = await db.precio.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -189,7 +195,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Eliminar el precio
     await db.precio.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 

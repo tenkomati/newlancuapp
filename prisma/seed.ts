@@ -23,16 +23,21 @@ async function main() {
   console.log('✅ Usuario administrador creado:', adminUser.email);
 
   // Crear cliente de ejemplo
-  const cliente = await prisma.cliente.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      nombre: 'Cliente Ejemplo',
-      direccion: 'Calle Ejemplo 123',
-      telefono: '123456789',
-      email: 'cliente@ejemplo.com',
-    },
+  let cliente = await prisma.cliente.findFirst({
+    where: { email: 'cliente@ejemplo.com' },
   });
+  
+  if (!cliente) {
+    cliente = await prisma.cliente.create({
+      data: {
+        nombre: 'Cliente Ejemplo',
+        direccion: 'Calle Falsa 123',
+        telefono: '+54 9 11 1234-5678',
+        email: 'cliente@ejemplo.com',
+        zona: 'Centro',
+      },
+    });
+  }
 
   console.log('✅ Cliente de ejemplo creado:', cliente.nombre);
 

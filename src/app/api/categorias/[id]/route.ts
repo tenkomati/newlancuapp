@@ -11,7 +11,7 @@ const categoriaSchema = z.object({
 });
 
 // GET - Obtener una categoría por ID
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -22,9 +22,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
     const categoria = await db.categoria.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         precios: {
@@ -64,7 +65,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // PUT - Actualizar una categoría por ID
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -75,10 +76,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si la categoría existe
     const categoriaExistente = await db.categoria.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -98,7 +101,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         where: {
           nombre: validatedData.nombre,
           id: {
-            not: params.id,
+            not: id,
           },
         },
       });
@@ -114,7 +117,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Actualizar la categoría
     const categoriaActualizada = await db.categoria.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: validatedData,
       include: {
@@ -155,7 +158,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - Eliminar una categoría por ID
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -166,10 +169,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si la categoría existe
     const categoriaExistente = await db.categoria.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         productos: true,
@@ -195,7 +200,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Eliminar la categoría
     await db.categoria.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 

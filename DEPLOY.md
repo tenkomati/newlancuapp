@@ -111,21 +111,34 @@ CMD ["npm", "start"]
 - **Error de autenticación**: Verifica `NEXTAUTH_SECRET` y `NEXTAUTH_URL`
 - **Error de build**: Ejecuta `npm run build` localmente para debuggear
 
-### Problemas Específicos de Windows
+## ✅ Compatibilidad Next.js 15
 
-**Error: EPERM operation not permitted**
+La aplicación ha sido **totalmente actualizada** para ser compatible con Next.js 15:
+- ✅ Parámetros de rutas dinámicas actualizados (`Promise<{ id: string }>`)
+- ✅ Configuración de `next.config.ts` optimizada
+- ✅ Todas las rutas API funcionando correctamente
+- ✅ TypeScript sin errores
+
+## 🚨 Problemas Conocidos
+
+### Windows - Error EPERM
+Si encuentras errores `EPERM: operation not permitted` durante el build:
+
 ```bash
-# Si encuentras errores de permisos en Windows:
-# 1. Ejecuta la terminal como administrador
-# 2. O usa WSL2 para el desarrollo
-# 3. O despliega directamente en la nube
+# Ejecutar como administrador o cambiar permisos
+# Alternativamente, usar WSL2 para desarrollo
+# RECOMENDADO: Usar Vercel para deployment
 ```
 
-**Múltiples lockfiles**
+### Múltiples Lockfiles
+Si ves warnings sobre múltiples lockfiles:
+
 ```bash
-# Si ves warnings sobre múltiples lockfiles:
-rm pnpm-lock.yaml  # Si existe
-# O usa pnpm en lugar de npm
+# Eliminar package-lock.json si usas pnpm
+rm package-lock.json
+
+# O eliminar pnpm-lock.yaml si usas npm
+rm pnpm-lock.yaml
 ```
 
 ### Comandos de Verificación

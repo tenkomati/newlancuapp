@@ -20,7 +20,7 @@ const pedidoUpdateSchema = z.object({
 });
 
 // GET - Obtener un pedido por ID
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -31,9 +31,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     const pedido = await db.pedido.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         cliente: true,
@@ -72,7 +74,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // PUT - Actualizar un pedido por ID (solo estado, cobrado, observación y reparto)
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -83,10 +85,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el pedido existe
     const pedidoExistente = await db.pedido.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         cliente: true,
@@ -138,7 +142,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Actualizar el pedido
     const pedidoActualizado = await db.pedido.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: validatedData,
       include: {
@@ -170,7 +174,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - Cancelar un pedido por ID
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -181,10 +185,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el pedido existe
     const pedidoExistente = await db.pedido.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -214,7 +220,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Cancelar el pedido
     const pedidoCancelado = await db.pedido.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: {
         estado: 'CANCELADO',

@@ -14,7 +14,7 @@ const productoSchema = z.object({
 });
 
 // GET - Obtener un producto por ID
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -25,9 +25,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     const producto = await db.producto.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         categoria: true,
@@ -52,7 +54,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // PUT - Actualizar un producto por ID
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -63,10 +65,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el producto existe
     const productoExistente = await db.producto.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -96,7 +100,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     const productoActualizado = await db.producto.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: validatedData,
       include: {
@@ -122,7 +126,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - Eliminar un producto por ID
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -133,10 +137,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el producto existe
     const productoExistente = await db.producto.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -150,7 +156,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Verificar si el producto tiene pedidos asociados
     const pedidosAsociados = await db.pedidoItem.findFirst({
       where: {
-        productoId: params.id,
+        productoId: id,
       },
     });
 
@@ -164,7 +170,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Eliminar el producto
     await db.producto.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 

@@ -15,7 +15,7 @@ const usuarioUpdateSchema = z.object({
 });
 
 // GET - Obtener un usuario por ID
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -26,9 +26,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     const usuario = await db.user.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       select: {
         id: true,
@@ -58,7 +60,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // PUT - Actualizar un usuario por ID
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -69,10 +71,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el usuario existe
     const usuarioExistente = await db.user.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -134,7 +138,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Actualizar el usuario
     const usuarioActualizado = await db.user.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: updateData,
       select: {
@@ -165,7 +169,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - Eliminar un usuario por ID
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -176,10 +180,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       );
     }
 
+    const { id } = await params;
+    
     // Verificar si el usuario existe
     const usuarioExistente = await db.user.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -191,7 +197,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     }
 
     // No permitir eliminar el propio usuario
-    if (params.id === session.user.id) {
+    if (id === session.user.id) {
       return NextResponse.json(
         { error: 'No puede eliminar su propio usuario' },
         { status: 400 }
@@ -201,7 +207,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     // Eliminar el usuario
     await db.user.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 

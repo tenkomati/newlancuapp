@@ -73,7 +73,7 @@ npm run dev
 
 ## 🏗️ Stack Tecnológico
 
-- **Framework**: Next.js 15
+- **Framework**: Next.js 15 ✅
 - **Base de datos**: PostgreSQL (Supabase)
 - **ORM**: Prisma
 - **Autenticación**: NextAuth.js
@@ -81,3 +81,4 @@ npm run dev
 - **Validación**: Zod
 - **Estado**: Zustand
 - **Deploy**: Vercel
+- **Compatibilidad**: ✅ Totalmente compatible con Next.js 15
