@@ -17,9 +17,10 @@ const clienteSchema = z.object({
 // GET - Obtener un cliente por ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session) {
@@ -31,7 +32,7 @@ export async function GET(
 
     const cliente = await db.cliente.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -55,9 +56,10 @@ export async function GET(
 // PUT - Actualizar un cliente por ID
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || session.user.role !== 'ADMIN') {
@@ -72,7 +74,7 @@ export async function PUT(
 
     const cliente = await db.cliente.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: validatedData,
     });
@@ -97,9 +99,10 @@ export async function PUT(
 // DELETE - Eliminar un cliente por ID
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || session.user.role !== 'ADMIN') {
@@ -112,7 +115,7 @@ export async function DELETE(
     // Verificar si el cliente tiene pedidos asociados
     const clienteConPedidos = await db.pedido.findFirst({
       where: {
-        clienteId: params.id,
+        clienteId: id,
       },
     });
 
@@ -125,7 +128,7 @@ export async function DELETE(
 
     await db.cliente.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
