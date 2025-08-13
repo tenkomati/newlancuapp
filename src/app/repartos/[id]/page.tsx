@@ -40,7 +40,7 @@ const repartoSchema = z.object({
 
 type RepartoFormValues = z.infer<typeof repartoSchema>;
 
-export default function DetalleRepartoPage({ params }: { params: { id: string } }) {
+export default function DetalleRepartoPage({ params }: { params: Promise<{ id: string }> }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [reparto, setReparto] = useState<Reparto | null>(null);
@@ -48,6 +48,7 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
+  const [id, setId] = useState<string | null>(null);
 
   const form = useForm<RepartoFormValues>({
     resolver: zodResolver(repartoSchema),
@@ -58,16 +59,28 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
   });
 
   useEffect(() => {
+    // Resolver params asíncronos
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    resolveParams();
+  }, [params]);
+
+  useEffect(() => {
     // Redireccionar si no está autenticado
     if (status === 'unauthenticated') {
       router.push('/login');
       return;
     }
 
+    // Solo proceder si tenemos el id
+    if (!id) return;
+
     // Cargar reparto
     const fetchReparto = async () => {
       try {
-        const response = await fetch(`/api/repartos/${params.id}`);
+        const response = await fetch(`/api/repartos/${id}`);
         if (!response.ok) {
           throw new Error('Error al cargar reparto');
         }
@@ -91,14 +104,15 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
     };
 
     fetchReparto();
-  }, [status, router, params.id, form]);
+  }, [status, router, id, form]);
 
   const handleEliminar = async () => {
     if (!confirm('¿Está seguro de eliminar este reparto?')) return;
+    if (!id) return;
 
     setLoadingAction(true);
     try {
-      const response = await fetch(`/api/repartos/${params.id}`, {
+      const response = await fetch(`/api/repartos/${id}`, {
         method: 'DELETE',
       });
 
@@ -121,9 +135,11 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
   };
 
   const onSubmit = async (data: RepartoFormValues) => {
+    if (!id) return;
+    
     setLoadingAction(true);
     try {
-      const response = await fetch(`/api/repartos/${params.id}`, {
+      const response = await fetch(`/api/repartos/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +153,7 @@ export default function DetalleRepartoPage({ params }: { params: { id: string } 
       }
 
       // Recargar el reparto para obtener los datos actualizados
-      const updatedResponse = await fetch(`/api/repartos/${params.id}`);
+      const updatedResponse = await fetch(`/api/repartos/${id}`);
       if (!updatedResponse.ok) {
         throw new Error('Error al recargar reparto');
       }

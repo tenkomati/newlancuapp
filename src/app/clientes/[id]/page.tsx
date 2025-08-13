@@ -22,12 +22,13 @@ const clienteSchema = z.object({
 
 type ClienteFormValues = z.infer<typeof clienteSchema>;
 
-export default function EditarClientePage({ params }: { params: { id: string } }) {
+export default function EditarClientePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [id, setId] = useState<string | null>(null);
 
   const {
     register,
@@ -46,11 +47,23 @@ export default function EditarClientePage({ params }: { params: { id: string } }
     },
   });
 
+  // Resolver params asíncronos
+  useEffect(() => {
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    resolveParams();
+  }, [params]);
+
   // Cargar datos del cliente
   useEffect(() => {
+    // Solo proceder si tenemos el id
+    if (!id) return;
+
     const fetchCliente = async () => {
       try {
-        const response = await fetch(`/api/clientes/${params.id}`);
+        const response = await fetch(`/api/clientes/${id}`);
         if (!response.ok) {
           throw new Error('Error al cargar cliente');
         }
@@ -65,14 +78,16 @@ export default function EditarClientePage({ params }: { params: { id: string } }
     };
 
     fetchCliente();
-  }, [params.id, reset]);
+  }, [id, reset]);
 
   const onSubmit = async (data: ClienteFormValues) => {
+    if (!id) return;
+    
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/clientes/${params.id}`, {
+      const response = await fetch(`/api/clientes/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

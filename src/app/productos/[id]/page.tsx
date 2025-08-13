@@ -39,13 +39,14 @@ const productoSchema = z.object({
 
 type ProductoFormValues = z.infer<typeof productoSchema>;
 
-export default function EditarProductoPage({ params }: { params: { id: string } }) {
+export default function EditarProductoPage({ params }: { params: Promise<{ id: string }> }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [producto, setProducto] = useState<Producto | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [id, setId] = useState<string | null>(null);
 
   const form = useForm<ProductoFormValues>({
     resolver: zodResolver(productoSchema) as any,
@@ -59,6 +60,15 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
   });
 
   useEffect(() => {
+    // Resolver params asíncronos
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    resolveParams();
+  }, [params]);
+
+  useEffect(() => {
     // Redireccionar si no está autenticado o no es admin
     if (status === 'unauthenticated') {
       router.push('/login');
@@ -69,6 +79,9 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
       router.push('/');
       return;
     }
+
+    // Solo proceder si tenemos el id
+    if (!id) return;
 
     // Cargar categorías
     const fetchCategorias = async () => {
@@ -88,7 +101,7 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
     // Cargar producto
     const fetchProducto = async () => {
       try {
-        const response = await fetch(`/api/productos/${params.id}`);
+        const response = await fetch(`/api/productos/${id}`);
         if (!response.ok) {
           throw new Error('Error al cargar producto');
         }
@@ -98,10 +111,9 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
         // Establecer valores por defecto en el formulario
         form.reset({
           nombre: data.nombre,
-          descripcion: data.descripcion || '',
-          imagen: data.imagen || '',
-          activo: data.activo,
+          descripcion: data.descripcion,
           categoriaId: data.categoriaId,
+          activo: data.activo,
         });
       } catch (err) {
         setError('Error al cargar producto');
@@ -111,14 +123,16 @@ export default function EditarProductoPage({ params }: { params: { id: string } 
 
     fetchCategorias();
     fetchProducto();
-  }, [status, session, router, params.id, form]);
+  }, [status, session, router, id, form]);
 
   const onSubmit = async (data: ProductoFormValues) => {
+    if (!id) return;
+    
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/productos/${params.id}`, {
+      const response = await fetch(`/api/productos/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

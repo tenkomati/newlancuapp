@@ -46,7 +46,7 @@ interface Pedido {
   total: number;
 }
 
-export default function PedidoDetallePage({ params }: { params: { id: string } }) {
+export default function PedidoDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [pedido, setPedido] = useState<Pedido | null>(null);
@@ -57,6 +57,16 @@ export default function PedidoDetallePage({ params }: { params: { id: string } }
   const [observacion, setObservacion] = useState('');
   const [repartoId, setRepartoId] = useState('');
   const [loadingAction, setLoadingAction] = useState(false);
+  const [id, setId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Resolver params asíncronos
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    resolveParams();
+  }, [params]);
 
   useEffect(() => {
     // Redireccionar si no está autenticado
@@ -65,10 +75,13 @@ export default function PedidoDetallePage({ params }: { params: { id: string } }
       return;
     }
 
+    // Solo proceder si tenemos el id
+    if (!id) return;
+
     // Cargar pedido
     const fetchPedido = async () => {
       try {
-        const response = await fetch(`/api/pedidos/${params.id}`);
+        const response = await fetch(`/api/pedidos/${id}`);
         if (!response.ok) {
           throw new Error('Error al cargar pedido');
         }
@@ -100,14 +113,15 @@ export default function PedidoDetallePage({ params }: { params: { id: string } }
 
     fetchPedido();
     fetchRepartos();
-  }, [status, router, params.id]);
+  }, [status, router, id]);
 
   const handleCancelar = async () => {
     if (!confirm('¿Está seguro de cancelar este pedido?')) return;
+    if (!id) return;
 
     setLoadingAction(true);
     try {
-      const response = await fetch(`/api/pedidos/${params.id}`, {
+      const response = await fetch(`/api/pedidos/${id}`, {
         method: 'DELETE',
       });
 
@@ -135,10 +149,11 @@ export default function PedidoDetallePage({ params }: { params: { id: string } }
 
   const handleMarcarPagado = async () => {
     if (!pedido) return;
+    if (!id) return;
 
     setLoadingAction(true);
     try {
-      const response = await fetch(`/api/pedidos/${params.id}`, {
+      const response = await fetch(`/api/pedidos/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -167,10 +182,11 @@ export default function PedidoDetallePage({ params }: { params: { id: string } }
 
   const handleMarcarEntregado = async () => {
     if (!pedido) return;
+    if (!id) return;
 
     setLoadingAction(true);
     try {
-      const response = await fetch(`/api/pedidos/${params.id}`, {
+      const response = await fetch(`/api/pedidos/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -199,10 +215,11 @@ export default function PedidoDetallePage({ params }: { params: { id: string } }
 
   const handleGuardarCambios = async () => {
     if (!pedido) return;
+    if (!id) return;
 
     setLoadingAction(true);
     try {
-      const response = await fetch(`/api/pedidos/${params.id}`, {
+      const response = await fetch(`/api/pedidos/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +236,7 @@ export default function PedidoDetallePage({ params }: { params: { id: string } }
       }
 
       // Recargar el pedido para obtener los datos actualizados
-      const updatedResponse = await fetch(`/api/pedidos/${params.id}`);
+      const updatedResponse = await fetch(`/api/pedidos/${id}`);
       if (!updatedResponse.ok) {
         throw new Error('Error al recargar pedido');
       }

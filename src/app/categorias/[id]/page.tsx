@@ -24,12 +24,13 @@ const categoriaSchema = z.object({
 
 type CategoriaFormValues = z.infer<typeof categoriaSchema>;
 
-export default function EditarCategoriaPage({ params }: { params: { id: string } }) {
+export default function EditarCategoriaPage({ params }: { params: Promise<{ id: string }> }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [categoria, setCategoria] = useState<Categoria | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [id, setId] = useState<string | null>(null);
 
   const form = useForm<CategoriaFormValues>({
     resolver: zodResolver(categoriaSchema),
@@ -38,6 +39,15 @@ export default function EditarCategoriaPage({ params }: { params: { id: string }
       descripcion: '',
     },
   });
+
+  useEffect(() => {
+    // Resolver params asíncronos
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    resolveParams();
+  }, [params]);
 
   useEffect(() => {
     // Redireccionar si no está autenticado o no es admin
@@ -51,10 +61,12 @@ export default function EditarCategoriaPage({ params }: { params: { id: string }
       return;
     }
 
-    // Cargar categoría
+    // Cargar categoría solo si tenemos el id
+    if (!id) return;
+
     const fetchCategoria = async () => {
       try {
-        const response = await fetch(`/api/categorias/${params.id}`);
+        const response = await fetch(`/api/categorias/${id}`);
         if (!response.ok) {
           throw new Error('Error al cargar categoría');
         }
@@ -73,14 +85,16 @@ export default function EditarCategoriaPage({ params }: { params: { id: string }
     };
 
     fetchCategoria();
-  }, [status, session, router, params.id, form]);
+  }, [status, session, router, id, form]);
 
   const onSubmit = async (data: CategoriaFormValues) => {
+    if (!id) return;
+    
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/categorias/${params.id}`, {
+      const response = await fetch(`/api/categorias/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

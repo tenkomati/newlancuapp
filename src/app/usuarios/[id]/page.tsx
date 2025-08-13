@@ -40,13 +40,14 @@ const usuarioEditSchema = z.object({
 
 type UsuarioEditFormValues = z.infer<typeof usuarioEditSchema>;
 
-export default function EditarUsuarioPage({ params }: { params: { id: string } }) {
+export default function EditarUsuarioPage({ params }: { params: Promise<{ id: string }> }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [id, setId] = useState<string | null>(null);
 
   const form = useForm<UsuarioEditFormValues>({
     resolver: zodResolver(usuarioEditSchema),
@@ -63,6 +64,15 @@ export default function EditarUsuarioPage({ params }: { params: { id: string } }
   const watchRole = form.watch('role');
 
   useEffect(() => {
+    // Resolver params asíncronos
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    resolveParams();
+  }, [params]);
+
+  useEffect(() => {
     // Redireccionar si no está autenticado o no es admin
     if (status === 'unauthenticated') {
       router.push('/login');
@@ -74,10 +84,13 @@ export default function EditarUsuarioPage({ params }: { params: { id: string } }
       return;
     }
 
+    // Solo proceder si tenemos el id
+    if (!id) return;
+
     // Cargar usuario
     const fetchUsuario = async () => {
       try {
-        const response = await fetch(`/api/usuarios/${params.id}`);
+        const response = await fetch(`/api/usuarios/${id}`);
         if (!response.ok) {
           throw new Error('Error al cargar usuario');
         }
@@ -115,9 +128,11 @@ export default function EditarUsuarioPage({ params }: { params: { id: string } }
 
     fetchUsuario();
     fetchClientes();
-  }, [status, session, router, params.id, form]);
+  }, [status, session, router, id, form]);
 
   const onSubmit = async (data: UsuarioEditFormValues) => {
+    if (!id) return;
+    
     setLoading(true);
     setError(null);
 
@@ -132,7 +147,7 @@ export default function EditarUsuarioPage({ params }: { params: { id: string } }
     }
 
     try {
-      const response = await fetch(`/api/usuarios/${params.id}`, {
+      const response = await fetch(`/api/usuarios/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
