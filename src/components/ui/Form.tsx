@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 interface FormProps {
-  form?: UseFormReturn<any>;
+  form?: UseFormReturn;
   onSubmit: (e: React.FormEvent) => void | Promise<void>;
   children: ReactNode;
   className?: string;

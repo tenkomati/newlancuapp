@@ -17,9 +17,9 @@ interface Categoria {
 // Schema para validación de producto
 const productoSchema = z.object({
   nombre: z.string().min(1, { message: 'El nombre es requerido' }),
-  descripcion: z.string().optional().nullable(),
-  imagen: z.string().optional().nullable(),
-  activo: z.boolean().default(true),
+  descripcion: z.string().nullable().optional(),
+  imagen: z.string().nullable().optional(),
+  activo: z.boolean(),
   categoriaId: z.string().min(1, { message: 'La categoría es requerida' }),
 });
 
@@ -32,8 +32,8 @@ export default function NuevoProductoPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(productoSchema) as any,
+  const form = useForm<ProductoFormValues>({
+    resolver: zodResolver(productoSchema),
     defaultValues: {
       nombre: '',
       descripcion: '',

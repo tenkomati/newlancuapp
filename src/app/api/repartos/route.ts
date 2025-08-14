@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(repartos);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error al obtener repartos:', error);
     return NextResponse.json(
       { error: 'Error al obtener repartos' },

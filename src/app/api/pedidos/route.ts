@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(pedidos);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error al obtener pedidos:', error);
     return NextResponse.json(
       { error: 'Error al obtener pedidos' },

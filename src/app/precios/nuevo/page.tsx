@@ -38,8 +38,8 @@ export default function NuevoPrecioPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(precioSchema) as any,
+  const form = useForm<PrecioFormValues>({
+    resolver: zodResolver(precioSchema),
     defaultValues: {
       tipo: 'FABRICA' as const,
       valor: 0,

@@ -55,8 +55,8 @@ export default function EditarPrecioPage({ params }: { params: Promise<{ id: str
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(precioSchema) as any,
+  const form = useForm<PrecioFormValues>({
+    resolver: zodResolver(precioSchema),
     defaultValues: {
       tipo: 'FABRICA' as const,
       valor: 0,
@@ -125,10 +125,10 @@ export default function EditarPrecioPage({ params }: { params: Promise<{ id: str
           tipo: data.tipo,
           valor: data.valor,
           fechaInicio: fechaInicio,
-          fechaFin: fechaFin,
+          fechaFin: fechaFin || '',
           activo: data.activo,
           categoriaId: data.categoriaId,
-        } as any);
+        });
       } catch (err) {
         setError('Error al cargar precio');
         console.error(err);

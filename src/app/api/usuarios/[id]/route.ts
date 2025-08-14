@@ -126,7 +126,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const updateData: {
       name: string;
       email: string;
-      role: string;
+      role: 'ADMIN' | 'USUARIO';
       clienteId: string | null | undefined;
       password?: string;
     } = {
@@ -146,7 +146,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       where: {
         id: id,
       },
-      data: updateData as any,
+      data: updateData,
       select: {
         id: true,
         name: true,

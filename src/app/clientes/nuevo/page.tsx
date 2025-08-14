@@ -29,8 +29,8 @@ export default function NuevoClientePage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(clienteSchema) as any,
+  } = useForm<ClienteFormValues>({
+    resolver: zodResolver(clienteSchema),
     defaultValues: {
       nombre: '',
       direccion: '',

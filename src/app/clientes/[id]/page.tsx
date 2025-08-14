@@ -35,8 +35,8 @@ export default function EditarClientePage({ params }: { params: Promise<{ id: st
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
-    resolver: zodResolver(clienteSchema) as any,
+  } = useForm<ClienteFormValues>({
+    resolver: zodResolver(clienteSchema),
     defaultValues: {
       nombre: '',
       direccion: '',

@@ -60,8 +60,8 @@ export default function NuevoPedidoPage() {
   const [error, setError] = useState<string | null>(null);
   const [clienteTipo, setClienteTipo] = useState<'FABRICA' | 'MAYORISTA' | 'MINORISTA' | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(pedidoSchema) as any,
+  const form = useForm<PedidoFormValues>({
+    resolver: zodResolver(pedidoSchema),
     defaultValues: {
       clienteId: '',
       observacion: '',

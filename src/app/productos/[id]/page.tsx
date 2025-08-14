@@ -48,8 +48,8 @@ export default function EditarProductoPage({ params }: { params: Promise<{ id: s
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(productoSchema) as any,
+  const form = useForm<ProductoFormValues>({
+    resolver: zodResolver(productoSchema),
     defaultValues: {
       nombre: '',
       descripcion: '',

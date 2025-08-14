@@ -18,7 +18,7 @@ interface Cliente {
 }
 
 interface UserWithRole {
-  role: string;
+  role: 'ADMIN' | 'USUARIO';
 }
 
 export default function ClientesPage() {
@@ -87,7 +87,7 @@ export default function ClientesPage() {
     return <div className="text-center py-10 bg-gray-50 rounded-md">Cargando...</div>;
   }
 
-  if (status === 'authenticated' && session?.user && (session.user as any).role !== 'ADMIN') {
+  if (status === 'authenticated' && session?.user && (session.user as UserWithRole).role !== 'ADMIN') {
     return null; // Redirigiendo...
   }
 
