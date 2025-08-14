@@ -38,11 +38,11 @@ export default function NuevoPrecioPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<PrecioFormValues>({
+  const form = useForm({
     resolver: zodResolver(precioSchema) as any,
     defaultValues: {
-      tipo: undefined,
-      valor: undefined,
+      tipo: 'FABRICA' as const,
+      valor: 0,
       fechaInicio: new Date().toISOString().split('T')[0],
       fechaFin: null,
       activo: true,
@@ -121,7 +121,7 @@ export default function NuevoPrecioPage() {
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <FormField
             name="categoriaId"

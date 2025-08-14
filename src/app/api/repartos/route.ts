@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const incluirPasados = searchParams.get('incluirPasados') === 'true';
     const zona = searchParams.get('zona');
 
-    const where: any = {};
+    const where: { fecha?: { gte: Date }, zona?: string } = {};
     
     // Filtrar por fecha si no se incluyen pasados
     if (!incluirPasados) {

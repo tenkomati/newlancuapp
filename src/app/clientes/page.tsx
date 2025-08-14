@@ -17,6 +17,10 @@ interface Cliente {
   activo: boolean;
 }
 
+interface UserWithRole {
+  role: string;
+}
+
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +30,7 @@ export default function ClientesPage() {
 
   // Verificar si el usuario es admin
   useEffect(() => {
-    if (status === 'authenticated' && session?.user && (session.user as any).role !== 'ADMIN') {
+    if (status === 'authenticated' && session?.user && (session.user as UserWithRole).role !== 'ADMIN') {
       router.push('/');
     }
   }, [session, status, router]);
@@ -49,7 +53,7 @@ export default function ClientesPage() {
       }
     };
 
-    if (status === 'authenticated' && session?.user && (session.user as any).role === 'ADMIN') {
+    if (status === 'authenticated' && session?.user && (session.user as UserWithRole).role === 'ADMIN') {
       fetchClientes();
     }
   }, [status, session]);

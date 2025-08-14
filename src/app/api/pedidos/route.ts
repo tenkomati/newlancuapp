@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     const clienteId = searchParams.get('clienteId');
 
     // Filtrar por cliente si el usuario no es admin
-    const where: any = {};
+    const where: { clienteId?: string } = {};
     if (session.user.role !== 'ADMIN') {
       if (!session.user.clienteId) {
         return NextResponse.json(

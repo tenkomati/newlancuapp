@@ -125,7 +125,7 @@ export default function NuevoUsuarioPage() {
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <FormField
             name="email"

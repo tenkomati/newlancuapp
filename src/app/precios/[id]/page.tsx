@@ -55,11 +55,11 @@ export default function EditarPrecioPage({ params }: { params: Promise<{ id: str
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
 
-  const form = useForm<PrecioFormValues>({
+  const form = useForm({
     resolver: zodResolver(precioSchema) as any,
     defaultValues: {
-      tipo: undefined,
-      valor: undefined,
+      tipo: 'FABRICA' as const,
+      valor: 0,
       fechaInicio: '',
       fechaFin: null,
       activo: true,
@@ -128,7 +128,7 @@ export default function EditarPrecioPage({ params }: { params: Promise<{ id: str
           fechaFin: fechaFin,
           activo: data.activo,
           categoriaId: data.categoriaId,
-        });
+        } as any);
       } catch (err) {
         setError('Error al cargar precio');
         console.error(err);
@@ -182,7 +182,7 @@ export default function EditarPrecioPage({ params }: { params: Promise<{ id: str
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <FormField
             name="categoriaId"

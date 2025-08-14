@@ -11,8 +11,8 @@ interface Categoria {
   id: string;
   nombre: string;
   descripcion: string | null;
-  productos: any[];
-  precios: any[];
+  productos: { id: string; nombre: string }[];
+  precios: { id: string; precio: number }[];
 }
 
 export default function CategoriasPage() {

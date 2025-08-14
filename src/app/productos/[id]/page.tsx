@@ -48,7 +48,7 @@ export default function EditarProductoPage({ params }: { params: Promise<{ id: s
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
 
-  const form = useForm<ProductoFormValues>({
+  const form = useForm({
     resolver: zodResolver(productoSchema) as any,
     defaultValues: {
       nombre: '',
@@ -168,7 +168,7 @@ export default function EditarProductoPage({ params }: { params: Promise<{ id: s
 
       {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
 
-      <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <FormField
             name="nombre"

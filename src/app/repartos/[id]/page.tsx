@@ -267,7 +267,7 @@ export default function DetalleRepartoPage({ params }: { params: Promise<{ id: s
             <h2 className="text-lg font-semibold">Editar Reparto</h2>
           </div>
           <div className="p-4">
-            <Form form={form} onSubmit={form.handleSubmit(onSubmit as any)}>
+            <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
               <div className="space-y-4">
                 <FormField
                   name="fecha"
